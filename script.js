@@ -1,133 +1,57 @@
-import { block } from "./clicker.js"
+import winningCheck from "./board.js";
+import { makePlayer } from "./makeplayer.js";
+import { board, winningCombinations } from "./board.js";
 
-let gameBoard = [
-    , , ,
-    , , ,
-    , , ,
-];
+const block = document.querySelectorAll(".block");
+const placeholder = document.querySelector("#placeholder")
+const startButton = document.querySelector("#startGame")
+let player1Name = document.querySelector("#player1")
+let player2Name = document.querySelector("#player2")
 
-let boardCombination = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-];
+startButton.addEventListener("click", playGame);
 
 function playGame() {
+    const player1 = new makePlayer(player1Name.value, "X");
+    const player2 = new makePlayer(player2Name.value, "O");
 
-    for (let i = 0; i < 3; i++) {
+    player1Name.value = "";
+    player2Name.value = "";
 
-        let playerChoice = undefined;
+    let currentTurn = player1;
+    placeholder.textContent = `${player1.name} Turn`;
 
-        do {
-            playerChoice = parseInt(prompt("Masukkan Angka"));
-        } while (gameBoard[playerChoice] === "o" || gameBoard[playerChoice] === "x")
+    block.forEach((item, index) => {
+        block.textContent = "";
+        item.addEventListener("click", handleClick);
+    })
 
-        switch(playerChoice) {
-            case 0: 
-                gameBoard[0] = "x"
-                break;
-            case 1: 
-                gameBoard[1] = "x"
-                break;
-            case 2: 
-                gameBoard[2] = "x"
-                break;
-            case 3: 
-                gameBoard[3] = "x"
-                break;
-            case 4: 
-                gameBoard[4] = "x"
-                break;
-            case 5: 
-                gameBoard[5] = "x"
-                break;
-            case 6: 
-                gameBoard[6] = "x"
-                break;
-            case 7: 
-                gameBoard[7] = "x"
-                break;
-            case 8: 
-                gameBoard[8] = "x"
-                break;
+    function handleClick(x) {
+        let tempTarget = x.target;
+        let temp = Array.from(block).indexOf(tempTarget);
+
+        if (tempTarget.textContent === "") {
+            tempTarget.textContent = currentTurn.symbol;
+            board[temp] = currentTurn.symbol;
+
+
+            if (winningCheck(board)) {
+                placeholder.textContent = `${currentTurn.name} Win!`;
+                block.forEach((item, index) => {
+                    item.removeEventListener("click", handleClick);
+                })
+                return;
+            }
+
+            if (currentTurn === player1) {
+                currentTurn = player2;
+            } else {
+                currentTurn = player1;
+            }
+
+            placeholder.textContent = `${currentTurn.name} Turn`;
         }
 
-        let computerChoice = getComputerChoice();
-        console.log(computerChoice);
-        
-        switch(computerChoice) {
-            case 0: 
-                gameBoard[0] = "o"
-                break;
-            case 1: 
-                gameBoard[1] = "o"
-                break;
-            case 2: 
-                gameBoard[2] = "o"
-                break;
-            case 3: 
-                gameBoard[3] = "o"
-                break;
-            case 4: 
-                gameBoard[4] = "o"
-                break;
-            case 5: 
-                gameBoard[5] = "o"
-                break;
-            case 6: 
-                gameBoard[6] = "o"
-                break;
-            case 7: 
-                gameBoard[7] = "o"
-                break;
-            case 8: 
-                gameBoard[8] = "o"
-                break;
-        }
-
-        
-
-
+        console.log(board);
     }
 
-    console.log(gameBoard);
-    boardChecker(gameBoard, "x", "o");
-
 }
-
-function getComputerChoice() {
-    let computerTemp = Math.floor(Math.random() * 9);
-
-    if (gameBoard[computerTemp] === "x" || gameBoard[computerTemp] === "o") {
-        return getComputerChoice();
-    } else {
-        return computerTemp;
-    }
-
-    
-}
-
-function boardChecker(board, player, computer) {
-    for (const x of boardCombination) {
-        const [a, b, c] = x;
-        if (board[a] === player && board[b] === player && board[c] === player) {
-            console.log("Player win");
-            return true;
-        } else if (board[a] === computer && board[b] === computer && board[c] === computer) {
-            console.log("Computer win");
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-
-
-playGame();
