@@ -1,3 +1,5 @@
+import "./styles.css"
+
 import winningCheck from "./board.js";
 import { makePlayer } from "./makeplayer.js";
 import { board, winningCombinations } from "./board.js";
